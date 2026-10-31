@@ -19,7 +19,8 @@ export default function MediaSection() {
         <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-xl border border-border/60 shadow-soft">
           <iframe
             className="w-full aspect-video rounded-xl"
-            src="https://www.youtube.com/embed/c0GkhImWPao"
+            src="https://www.youtube-nocookie.com/embed/c0GkhImWPao"
+            loading="lazy"
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
