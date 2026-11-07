@@ -6,11 +6,10 @@ import { SectionHeader } from "@/components/shared/section-header";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/components/posts/post-card";
 
-import { getRecentPosts } from "@/lib/wordpress";
+import { getRecentArticles } from "@/lib/strapi";
 
 export default async function ArticlesSection() {
-  const posts = await getRecentPosts();
-  const latestPosts = posts.slice(0, 3);
+  const latestPosts = await getRecentArticles(3);
 
   if (latestPosts.length === 0) {
     return null;
@@ -40,7 +39,7 @@ export default async function ArticlesSection() {
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {latestPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.documentId} article={post} />
           ))}
         </div>
       </Container>
