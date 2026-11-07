@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { Author, Category, Tag } from "@/lib/wordpress.d";
+import type { Author, Category, Tag } from "@/lib/strapi.d";
 import { ClientOnly } from "../utils/client-only";
 
 interface FilterPostsProps {
@@ -73,7 +73,7 @@ export function FilterPosts({
             <SelectContent>
               <SelectItem value="all">Semua Tag</SelectItem>
               {tags.map((tag) => (
-                <SelectItem key={tag.id} value={tag.id.toString()}>
+                <SelectItem key={tag.documentId} value={tag.slug}>
                   {tag.name}
                 </SelectItem>
               ))}
@@ -99,7 +99,7 @@ export function FilterPosts({
             <SelectContent>
               <SelectItem value="all">Semua Kategori</SelectItem>
               {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id.toString()}>
+                <SelectItem key={category.documentId} value={category.slug}>
                   {category.name}
                 </SelectItem>
               ))}
@@ -125,7 +125,7 @@ export function FilterPosts({
             <SelectContent>
               <SelectItem value="all">Semua Penulis</SelectItem>
               {authors.map((author) => (
-                <SelectItem key={author.id} value={author.id.toString()}>
+                <SelectItem key={author.documentId} value={author.slug}>
                   {author.name}
                 </SelectItem>
               ))}

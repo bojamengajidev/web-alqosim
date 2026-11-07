@@ -1,39 +1,41 @@
 import type { NextConfig } from "next";
 
-const wordpressHostname = process.env.WORDPRESS_HOSTNAME;
-const wordpressUrl = process.env.WORDPRESS_URL;
+const strapiUrl =
+  process.env.STRAPI_URL ||
+  process.env.NEXT_PUBLIC_STRAPI_URL ||
+  "https://cms.masjidalqosim.com";
 
-const remotePatterns = wordpressHostname
-  ? [
+function getStrapiImagePatterns() {
+  try {
+    const url = new URL(strapiUrl);
+    const protocol = url.protocol.replace(":", "") as "http" | "https";
+
+    return [
       {
-        protocol: "https" as const,
-        hostname: wordpressHostname,
-        pathname: "/wp-content/uploads/**",
+        protocol,
+        hostname: url.hostname,
+        port: url.port || undefined,
+        pathname: "/uploads/**",
       },
-      {
-        protocol: "http" as const,
-        hostname: wordpressHostname,
-        pathname: "/wp-content/uploads/**",
-      },
-    ]
-  : [];
+    ];
+  } catch {
+    return [];
+  }
+}
 
 const nextConfig: NextConfig = {
   trailingSlash: false,
   compress: true,
   reactStrictMode: true,
   images: {
-    remotePatterns,
+    remotePatterns: getStrapiImagePatterns(),
   },
 
   async redirects() {
-    if (!wordpressUrl) {
-      return [];
-    }
     return [
       {
         source: "/admin",
-        destination: `${wordpressUrl}/wp-admin`,
+        destination: `${strapiUrl}/admin`,
         permanent: true,
       },
     ];

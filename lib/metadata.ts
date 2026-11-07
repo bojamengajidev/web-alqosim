@@ -5,7 +5,8 @@ interface ContentMetadataOptions {
   title: string;
   description: string;
   slug: string;
-  basePath: "posts" | "pages";
+  basePath: "posts";
+  image?: string | null;
 }
 
 export function generateContentMetadata({
@@ -13,14 +14,20 @@ export function generateContentMetadata({
   description,
   slug,
   basePath,
+  image,
 }: ContentMetadataOptions): Metadata {
   const ogUrl = new URL(`${siteConfig.site_domain}/api/og`);
   ogUrl.searchParams.append("title", title);
   ogUrl.searchParams.append("description", description);
 
+  const imageUrl = image || ogUrl.toString();
+
   return {
     title,
     description,
+    alternates: {
+      canonical: `/${basePath}/${slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -28,7 +35,7 @@ export function generateContentMetadata({
       url: `${siteConfig.site_domain}/${basePath}/${slug}`,
       images: [
         {
-          url: ogUrl.toString(),
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -39,7 +46,7 @@ export function generateContentMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [ogUrl.toString()],
+      images: [imageUrl],
     },
   };
 }

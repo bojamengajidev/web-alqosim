@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
 
@@ -10,35 +11,37 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { stripHtml, truncateHtml } from "@/lib/metadata";
-import type { Post } from "@/lib/wordpress.d";
+import {
+  blocksToPlainText,
+  formatArticleDate,
+  getStrapiMediaUrl,
+  truncateText,
+} from "@/lib/strapi";
+import type { Article } from "@/lib/strapi.d";
 
-export function PostCard({ post }: { post: Post }) {
-  const media = post._embedded?.["wp:featuredmedia"]?.[0] ?? null;
-  const category = post._embedded?.["wp:term"]?.[0]?.[0] ?? null;
+export function PostCard({ article }: { article: Article }) {
+  const cover = getStrapiMediaUrl(article.cover, "medium");
+  const category = article.category ?? null;
 
-  const title = stripHtml(post.title?.rendered || "Tanpa judul");
-  const excerpt = post.excerpt?.rendered
-    ? truncateHtml(post.excerpt.rendered, 18)
-    : "Belum ada ringkasan untuk artikel ini.";
+  const title = article.title || "Tanpa judul";
+  const excerpt =
+    article.excerpt?.trim() ||
+    truncateText(blocksToPlainText(article.content)) ||
+    "Belum ada ringkasan untuk artikel ini.";
 
-  const date = new Date(post.date).toLocaleDateString("id-ID", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const date = formatArticleDate(article.publishedAt ?? article.createdAt);
 
   return (
-    <Link href={`/posts/${post.slug}`} className="group block h-full">
+    <Link href={`/posts/${article.slug}`} className="group block h-full">
       <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-none transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary/25 group-hover:shadow-md">
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-          {media?.source_url ? (
-            <img
-              src={media.source_url}
-              alt={title}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          {cover ? (
+            <Image
+              src={cover}
+              alt={article.cover?.alternativeText || title}
+              fill
+              sizes="(min-width: 1024px) 360px, (min-width: 768px) 50vw, 100vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
@@ -68,7 +71,7 @@ export function PostCard({ post }: { post: Post }) {
         <CardFooter className="mt-auto justify-between border-t border-border/60 p-5 pt-4 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays className="size-3.5" />
-            {date}
+            {date || "Tanpa tanggal"}
           </span>
           <span className="inline-flex items-center gap-1 font-medium text-primary">
             Baca
