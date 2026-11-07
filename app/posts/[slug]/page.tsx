@@ -4,11 +4,19 @@ import { notFound } from "next/navigation";
 import { CalendarDays, UserRound } from "lucide-react";
 
 import BackButton from "@/components/back";
-import { Article, Container, Section } from "@/components/craft";
+import { RichText } from "@/components/content/rich-text";
+import { Container, Section } from "@/components/craft";
 import { Badge } from "@/components/ui/badge";
 
-import { generateContentMetadata, stripHtml } from "@/lib/metadata";
-import { getAllPostSlugs, getPostBySlug } from "@/lib/wordpress";
+import { generateContentMetadata } from "@/lib/metadata";
+import {
+  getAllPostSlugs,
+  getPostBySlug,
+  pickImageUrl,
+  toPlainText,
+} from "@/lib/strapi";
+
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   return await getAllPostSlugs();
@@ -20,17 +28,25 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const article = await getPostBySlug(slug);
 
-  if (!post) {
+  if (!article) {
     return {};
   }
 
+  const title = article.seo?.metaTitle || article.title;
+  const description =
+    article.seo?.metaDescription ||
+    toPlainText(article.excerpt) ||
+    toPlainText(article.content).slice(0, 160);
+
   return generateContentMetadata({
-    title: stripHtml(post.title.rendered),
-    description: stripHtml(post.excerpt.rendered),
-    slug: post.slug,
+    title,
+    description,
+    slug: article.slug,
     basePath: "posts",
+    image:
+      pickImageUrl(article.seo?.shareImage) ?? pickImageUrl(article.cover),
   });
 }
 
@@ -40,21 +56,17 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const article = await getPostBySlug(slug);
 
-  if (!post) {
+  if (!article) {
     notFound();
   }
 
-  // Ambil data dari embed agar tidak perlu fetch ulang.
-  const author = post._embedded?.author?.[0];
-  const terms = post._embedded?.["wp:term"] ?? [];
-  const categories =
-    terms.find((group) => group[0]?.taxonomy === "category") ?? [];
-  const category = categories[0];
-  const featuredMedia = post._embedded?.["wp:featuredmedia"]?.[0];
+  const { author, category } = article;
+  const tags = article.tags ?? [];
+  const cover = pickImageUrl(article.cover);
 
-  const date = new Date(post.date).toLocaleDateString("id-ID", {
+  const date = new Date(article.publishedAt).toLocaleDateString("id-ID", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -69,7 +81,7 @@ export default async function Page({
           <header className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {category ? (
-                <Link href={`/posts?category=${category.id}`}>
+                <Link href={`/posts?category=${category.slug}`}>
                   <Badge variant="soft">{category.name}</Badge>
                 </Link>
               ) : null}
@@ -79,7 +91,7 @@ export default async function Page({
               </span>
               {author ? (
                 <Link
-                  href={`/posts?author=${author.id}`}
+                  href={`/posts?author=${author.slug}`}
                   className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <UserRound className="size-3.5" />
@@ -88,26 +100,33 @@ export default async function Page({
               ) : null}
             </div>
 
-            <h1
-              className="text-3xl font-semibold leading-tight tracking-tight text-foreground sm:text-4xl md:text-5xl"
-              dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-            />
+            <h1 className="text-3xl font-semibold leading-tight tracking-tight text-foreground sm:text-4xl md:text-5xl">
+              {article.title}
+            </h1>
           </header>
 
-          {featuredMedia?.source_url ? (
+          {cover ? (
             <div className="overflow-hidden rounded-2xl border border-border/60 bg-muted">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={featuredMedia.source_url}
-                alt={stripHtml(post.title.rendered)}
+                src={cover}
+                alt={article.cover?.alternativeText || article.title}
                 className="h-auto w-full object-cover"
               />
             </div>
           ) : null}
 
-          <Article
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content.rendered }}
-          />
+          <RichText content={article.content} />
+
+          {tags.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-6">
+              {tags.map((tag) => (
+                <Link key={tag.documentId} href={`/posts?tag=${tag.slug}`}>
+                  <Badge variant="secondary">#{tag.name}</Badge>
+                </Link>
+              ))}
+            </div>
+          ) : null}
 
           <div className="border-t border-border/60 pt-6">
             <BackButton />

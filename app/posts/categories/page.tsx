@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 import { ArchiveList } from "@/components/archive-list";
-import { getAllCategories } from "@/lib/wordpress";
-import type { Category } from "@/lib/wordpress.d";
+import { getAllCategories } from "@/lib/strapi";
+import type { StrapiCategory } from "@/lib/strapi.d";
 
 export const revalidate = 3600;
 
@@ -18,12 +18,12 @@ export default async function Page() {
   const categories = await getAllCategories();
 
   return (
-    <ArchiveList<Category>
+    <ArchiveList<StrapiCategory>
       eyebrow="Blog"
       title="Semua Kategori"
       description="Pilih kategori untuk menemukan artikel yang sesuai."
       items={categories}
-      getItemHref={(c) => `/posts?category=${c.id}`}
+      getItemHref={(c) => `/posts?category=${c.slug}`}
       getItemLabel={(c) => c.name}
       emptyMessage="Kategori akan tampil di sini setelah tersedia."
     />

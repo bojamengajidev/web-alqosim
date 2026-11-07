@@ -10,19 +10,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { stripHtml, truncateHtml } from "@/lib/metadata";
-import type { Post } from "@/lib/wordpress.d";
+import {
+  pickImageUrl,
+  toPlainText,
+  truncateText,
+} from "@/lib/strapi";
+import type { StrapiArticle } from "@/lib/strapi.d";
 
-export function PostCard({ post }: { post: Post }) {
-  const media = post._embedded?.["wp:featuredmedia"]?.[0] ?? null;
-  const category = post._embedded?.["wp:term"]?.[0]?.[0] ?? null;
+export function PostCard({ post }: { post: StrapiArticle }) {
+  const media = pickImageUrl(post.cover);
+  const category = post.category ?? null;
 
-  const title = stripHtml(post.title?.rendered || "Tanpa judul");
-  const excerpt = post.excerpt?.rendered
-    ? truncateHtml(post.excerpt.rendered, 18)
+  const title = post.title || "Tanpa judul";
+  const excerptSource =
+    toPlainText(post.excerpt) || toPlainText(post.content);
+
+  const excerpt = excerptSource
+    ? truncateText(excerptSource, 18)
     : "Belum ada ringkasan untuk artikel ini.";
 
-  const date = new Date(post.date).toLocaleDateString("id-ID", {
+  const date = new Date(post.publishedAt).toLocaleDateString("id-ID", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -32,10 +39,11 @@ export function PostCard({ post }: { post: Post }) {
     <Link href={`/posts/${post.slug}`} className="group block h-full">
       <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-none transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary/25 group-hover:shadow-md">
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-          {media?.source_url ? (
+          {media ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={media.source_url}
-              alt={title}
+              src={media}
+              alt={post.cover?.alternativeText || title}
               loading="lazy"
               decoding="async"
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"

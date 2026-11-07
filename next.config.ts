@@ -1,22 +1,45 @@
 import type { NextConfig } from "next";
 
-const wordpressHostname = process.env.WORDPRESS_HOSTNAME;
-const wordpressUrl = process.env.WORDPRESS_URL;
+const strapiUrl = process.env.STRAPI_URL;
 
-const remotePatterns = wordpressHostname
-  ? [
-      {
-        protocol: "https" as const,
-        hostname: wordpressHostname,
-        pathname: "/wp-content/uploads/**",
-      },
-      {
-        protocol: "http" as const,
-        hostname: wordpressHostname,
-        pathname: "/wp-content/uploads/**",
-      },
-    ]
-  : [];
+const strapiHostname = (() => {
+  if (!strapiUrl) return undefined;
+
+  try {
+    return new URL(strapiUrl).hostname;
+  } catch {
+    return undefined;
+  }
+})();
+
+const remotePatterns = [
+  ...(strapiHostname
+    ? [
+        {
+          protocol: "https" as const,
+          hostname: strapiHostname,
+          pathname: "/uploads/**",
+        },
+        {
+          protocol: "http" as const,
+          hostname: strapiHostname,
+          pathname: "/uploads/**",
+        },
+      ]
+    : []),
+  {
+    protocol: "http" as const,
+    hostname: "localhost",
+    port: "1337",
+    pathname: "/uploads/**",
+  },
+  {
+    protocol: "http" as const,
+    hostname: "127.0.0.1",
+    port: "1337",
+    pathname: "/uploads/**",
+  },
+];
 
 const nextConfig: NextConfig = {
   trailingSlash: false,
@@ -27,13 +50,14 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
-    if (!wordpressUrl) {
+    if (!strapiUrl) {
       return [];
     }
+
     return [
       {
         source: "/admin",
-        destination: `${wordpressUrl}/wp-admin`,
+        destination: `${strapiUrl}/admin`,
         permanent: true,
       },
     ];

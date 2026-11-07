@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllPostsForSitemap } from "@/lib/wordpress";
+import { getAllPostsForSitemap } from "@/lib/strapi";
 import { siteConfig } from "@/lib/site.config";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -17,12 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
-    },
-    {
-      url: `${siteConfig.site_domain}/pages`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
     },
     {
       url: `${siteConfig.site_domain}/posts/authors`,
@@ -46,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const postUrls: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteConfig.site_domain}/posts/${post.slug}`,
-    lastModified: new Date(post.modified),
+    lastModified: new Date(post.updatedAt),
     changeFrequency: "weekly",
     priority: 0.5,
   }));

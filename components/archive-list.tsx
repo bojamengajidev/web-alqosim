@@ -17,7 +17,7 @@ interface ArchiveListProps<T> {
   emptyMessage: string;
 }
 
-export function ArchiveList<T extends { id: number | string }>({
+export function ArchiveList<T>({
   title,
   eyebrow,
   description,
@@ -39,7 +39,11 @@ export function ArchiveList<T extends { id: number | string }>({
         {items.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
-              <Link key={item.id} href={getItemHref(item)} className="group block h-full">
+              <Link
+                key={getItemHref(item)}
+                href={getItemHref(item)}
+                className="group block h-full"
+              >
                 <Card className="h-full border-border/60 shadow-none transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary/25 group-hover:shadow-md">
                   <CardContent className="flex h-full items-start gap-4 p-5">
                     <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">

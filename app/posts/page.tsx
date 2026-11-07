@@ -4,12 +4,11 @@ import {
   getAllAuthors,
   getAllCategories,
   getAllTags,
-  getCategoryBySlug,
   getPostsPaginated,
   searchAuthors,
   searchCategories,
   searchTags,
-} from "@/lib/wordpress";
+} from "@/lib/strapi";
 
 import { Container, Section } from "@/components/craft";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -52,18 +51,11 @@ export default async function Page({
   const page = pageParam ? parseInt(pageParam, 10) : 1;
   const postsPerPage = 9;
 
-  let categoryId = category;
-
-  if (category && isNaN(Number(category))) {
-    const cat = await getCategoryBySlug(category);
-    categoryId = cat?.id?.toString();
-  }
-
   const [postsResponse, authors, tags, categories] = await Promise.all([
     getPostsPaginated(page, postsPerPage, {
       author,
       tag,
-      category: categoryId,
+      category,
       search,
     }),
     search ? searchAuthors(search) : getAllAuthors(),
@@ -121,7 +113,7 @@ export default async function Page({
           {posts.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.documentId} post={post} />
               ))}
             </div>
           ) : (
