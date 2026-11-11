@@ -46,7 +46,18 @@ export default async function Page({
     );
 
   const jadwal = await getJadwalKajianByMonth(selectedMonth);
-  const sessions = jadwal?.sesi ?? [];
+  const sessions = jadwal?.sesi
+    ? jadwal.sesi
+    : jadwal?.sesi?.[0]
+    ? [
+        {
+          tanggal: jadwal.sesi[0].tanggal,
+          waktuMulai: jadwal.sesi[0].waktuMulai,
+          waktuSelesai: jadwal.sesi[0].waktuSelesai,
+          judul: jadwal.sesi[0].judul,
+        },
+      ]
+    : [];
   const today = getTodayKey();
 
   const switcherMonths = buildSwitcherMonths(months, selectedMonth);
