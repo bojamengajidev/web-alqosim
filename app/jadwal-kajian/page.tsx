@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     "Jadwal kajian rutin dan khusus di Masjid Muhammad Al Qosim, Boja, Kendal.",
   alternates: {
-    canonical: "/jadwal-kajian",
+    canonical: "/jadwal-kajians",
   },
 };
 
