@@ -8,63 +8,24 @@ import { Container, Section } from "@/components/craft";
 import { SectionHeader } from "@/components/shared/section-header";
 import { CalendarDays, HeartHandshake } from "lucide-react";
 
-const activities = [
-  {
-    id: "shalat-berjamaah",
-    title: "Shalat Berjamaah",
-    description:
-      "Kumpulan jamaah shalat lima waktu berjamaah setiap hari di Masjid Muhammad Al Qosim.",
-    image: "/images/program-wakaf.png",
-  },
-  {
-    id: "shalat-jumat",
-    title: "Shalat Jumat",
-    description:
-      "Khutbah dan shalat Jumat berjamaah setiap Jumat hari, dilengkapi ceramah pendek.",
-    image: "/images/program-wakaf.png",
-  },
-  {
-    id: "kajian-rutin",
-    title: "Kajian Rutin",
-    description:
-      "Majelis ilmu syar'i harian dan mingguan untuk menjalin ilmu dan pemahaman agama.",
-    image: "/images/program-wakaf.png",
-  },
-  {
-    id: "madrasah-diniyah",
-    title: "Madrasah Diniyah Anak-Anak",
-    description:
-      "Program pendidikan awal untuk anak-anak dengan kurikulum yang menyenangkan dan interaktif.",
-    image: "/images/program-wakaf.png",
-  },
-  {
-    id: "kelas-tahsin",
-    title: "Kelas Belajar Tahsin",
-    description:
-      "Pelatihan membaca Al-Qur'an dengan tata tajweed yang benar untuk semua usia.",
-    image: "/images/program-wakaf.png",
-  },
-  {
-    id: "kelas-bahasa-arab",
-    title: "Kelas Belajar Bahasa Arab",
-    description:
-      "Mengajarkan dasar-dasar bahasa Arab untuk memahami Al-Qur'an dan bacaan shalat.",
-    image: "/images/program-wakaf.png",
-  },
-  {
-    id: "tebar-qurban",
-    title: "Tebar Qurban",
-    description:
-      "Program distribusi qurban secara berkala kepada perluas umat dan orang fakir miskin.",
-    image: "/images/program-wakaf.png",
-  },
-  {
-    id: "pendidikan-dini-sekolah-dasar",
-    title: "Pendidikan Dini & SD Islam",
-    description:
-      "Sekolah dasar Islam yang menyelenggarakan pengembangan akademik dan ibadah seiring bersama.",
-    image: "/images/program-wakaf.png",
-  },
+import {
+  getPostsPaginated,
+  pickImageUrl,
+} from "@/lib/strapi";
+import type { StrapiArticle } from "@/lib/strapi.d";
+
+const ACTIVITIES_PER_PAGE = 8;
+
+// Activity slugs that map to Strapi articles
+const ACTIVITY_SLUGS = [
+  "shalat-berjamaah",
+  "shalat-jumat",
+  "kajian-rutin",
+  "madrasah-diniyah",
+  "kelas-tahsin",
+  "kelas-bahasa-arab",
+  "tebar-qurban",
+  "pendidikan-dini-sekolah-dasar",
 ];
 
 export const metadata: Metadata = {
@@ -73,12 +34,72 @@ export const metadata: Metadata = {
     "Lihat berbagai kegiatan, program, dan kegiatan rutin yang dilaksanakan di Masjid Muhammad Al Qosim dan Boja Mengaji.",
 };
 
-export default function KegiatanPage() {
+export const dynamic = "auto";
+export const revalidate = 3600;
+
+export default async function KegiatanPage() {
+  // Fetch all activities from Strapi, filtering by known activity slugs
+  const { data: posts, headers } = await getPostsPaginated(
+    1,
+    100, // Fetch enough to cover all activities
+    {
+      // We'll filter client-side by slug since Strapi doesn't have activity-specific filters
+      search: "",
+    }
+  );
+
+  const { total, totalPages } = headers;
+
+  // Map Strapi articles to activity cards - filter by our known activity slugs
+  const activities: Array<{
+    id: string;
+    title: string;
+    description: string;
+    image: string | null;
+    slug: string;
+  }> = [];
+
+  if (posts) {
+    for (const post of posts) {
+      if (ACTIVITY_SLUGS.includes(post.slug)) {
+        activities.push({
+          id: post.slug,
+          title: post.title || "Tanpa judul",
+          description: post.excerpt || (post.content ? toPlainText(post.content) : ""),
+          image: pickImageUrl(post.cover),
+          slug: post.slug,
+        });
+      }
+    }
+  }
+
+  // Fallback: if no activities found via slugs, try to get recent articles
+  if (activities.length === 0) {
+    const { data: fallbackPosts } = await getPostsPaginated(
+      1,
+      ACTIVITIES_PER_PAGE,
+      { search: "" }
+    );
+    if (fallbackPosts) {
+      for (const post of fallbackPosts) {
+        activities.push({
+          id: post.slug,
+          title: post.title || "Tanpa judul",
+          description: post.excerpt || (post.content ? toPlainText(post.content) : ""),
+          image: pickImageUrl(post.cover),
+          slug: post.slug,
+        });
+        if (activities.length >= ACTIVITIES_PER_PAGE) break;
+      }
+    }
+  }
+
   return (
     <>
+
       {/* ==========================================================================
-           HERO SECTION - Gambar utama + judul
-         ========================================================================== */}
+         HERO SECTION - Gambar utama + judul
+       ========================================================================== */}
       <Section className="pt-0 pb-6">
         <Container className="max-w-4xl mx-auto">
           <div className="relative h-48 md:h-64 bg-secondary/60 rounded-2xl overflow-hidden mb-6">
@@ -104,8 +125,8 @@ export default function KegiatanPage() {
       </Section>
 
       {/* ==========================================================================
-           BENTO GRID - 8 Kegiatan
-         ========================================================================== */}
+         BENTO GRID - Kegiatan dari Strapi API
+       ========================================================================== */}
       <Section className="bg-muted/40">
         <Container>
           <SectionHeader
@@ -115,37 +136,44 @@ export default function KegiatanPage() {
           />
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {activities.map((act) => (
-              <Card
-                key={act.id}
-                className="flex flex-col h-full border-border/60 shadow-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-              >
-                <Image
-                  src={act.image}
-                  alt={act.title}
-                  width={400}
-                  height={250}
-                  sizes="(min-width: 1024px) 360px, 100vw"
-                  className="h-24 md:h-32 w-full object-cover rounded-t-md"
-                />
+            {activities.length > 0 ? (
+              activities.map((act) => (
+                <Card
+                  key={act.id}
+                  className="flex flex-col h-full border-border/60 shadow-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                >
+                  <Image
+                    src={act.image ?? "/images/program-wakaf.png"}
+                    alt={act.title}
+                    width={400}
+                    height={250}
+                    sizes="(min-width: 1024px) 360px, 100vw"
+                    className="h-24 md:h-32 w-full object-cover rounded-t-md"
+                  />
 
-                <CardContent className="flex flex-col flex-1 p-4">
-                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    {act.title}
-                  </span>
-                  <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground flex-1">
-                    {act.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                  <CardContent className="flex flex-col flex-1 p-4">
+                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {act.title}
+                    </span>
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground flex-1">
+                      {act.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                <p>Tidak ada program saat ini</p>
+                <p className="mt-2">Program akan segera diumumkan</p>
+              </div>
+            )}
           </div>
         </Container>
       </Section>
 
       {/* ==========================================================================
-           TOMBOL NAVIGASI PENUTUP
-         ========================================================================== */}
+         TOMBOL NAVIGASI PENUTUP
+       ========================================================================== */}
       <Section className="pt-8 pb-6">
         <Container className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
           <Button
@@ -188,4 +216,18 @@ export default function KegiatanPage() {
       </Section>
     </>
   );
+}
+
+// Helper function to convert HTML content to plain text
+function toPlainText(value?: string | null): string {
+  if (!value) return "";
+
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/`{1,3}/g, "")
+    .replace(/[*_>#~]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }

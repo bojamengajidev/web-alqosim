@@ -438,7 +438,7 @@ export async function getJadwalKajianByMonth(
   if (!bulan) return null;
 
   const { data } = await strapiFetchPaginatedGraceful<StrapiJadwalKajian>(
-    "/jadwal-kajian",
+    "/jadwal-kajians",
     {
       ...JADWAL_POPULATE,
       "filters[bulan][$eq]": bulan,
@@ -446,7 +446,7 @@ export async function getJadwalKajianByMonth(
       "pagination[page]": 1,
       "pagination[pageSize]": 1,
     },
-    ["strapi", "jadwal-kajian"],
+    ["strapi", "jadwal-kajians"],
   );
 
   const entry = data[0];
@@ -463,14 +463,14 @@ export async function getJadwalKajianByMonth(
 
 export async function getJadwalKajianMonths(): Promise<JadwalMonthOption[]> {
   const { data } = await strapiFetchPaginatedGraceful<StrapiJadwalKajian>(
-    "/jadwal-kajian",
+    "/jadwal-kajians",
     {
       "fields[0]": "bulan",
       "sort[0]": "bulan:desc",
       "pagination[page]": 1,
       "pagination[pageSize]": 100,
     },
-    ["strapi", "jadwal-kajian"],
+    ["strapi", "jadwal-kajians"],
   );
 
   const seen = new Set<string>();
