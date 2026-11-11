@@ -6,9 +6,16 @@ import type {
   StrapiArticle,
   StrapiAuthor,
   StrapiCategory,
+  StrapiJadwalKajian,
   StrapiMedia,
   StrapiTag,
 } from "./strapi.d";
+import {
+  dateToMonthKey,
+  formatMonthLabel,
+  monthKeyToDate,
+  type JadwalMonthOption,
+} from "./jadwal";
 
 /* ==========================================================================
    CONFIG
@@ -413,6 +420,74 @@ export async function searchAuthors(search: string): Promise<StrapiAuthor[]> {
   );
 
   return data;
+}
+
+/* ==========================================================================
+   JADWAL KAJIAN (monthly schedule)
+   ========================================================================== */
+
+const JADWAL_POPULATE: Query = {
+  "populate[sesi]": "true",
+};
+
+export async function getJadwalKajianByMonth(
+  monthKey: string,
+): Promise<StrapiJadwalKajian | null> {
+  const bulan = monthKeyToDate(monthKey);
+
+  if (!bulan) return null;
+
+  const { data } = await strapiFetchPaginatedGraceful<StrapiJadwalKajian>(
+    "/jadwal-kajian",
+    {
+      ...JADWAL_POPULATE,
+      "filters[bulan][$eq]": bulan,
+      "sort[0]": "publishedAt:desc",
+      "pagination[page]": 1,
+      "pagination[pageSize]": 1,
+    },
+    ["strapi", "jadwal-kajian"],
+  );
+
+  const entry = data[0];
+
+  if (!entry) return null;
+
+  return {
+    ...entry,
+    sesi: (entry.sesi ?? []).filter(
+      (session) => Boolean(session?.tanggal && session?.judul),
+    ),
+  };
+}
+
+export async function getJadwalKajianMonths(): Promise<JadwalMonthOption[]> {
+  const { data } = await strapiFetchPaginatedGraceful<StrapiJadwalKajian>(
+    "/jadwal-kajian",
+    {
+      "fields[0]": "bulan",
+      "sort[0]": "bulan:desc",
+      "pagination[page]": 1,
+      "pagination[pageSize]": 100,
+    },
+    ["strapi", "jadwal-kajian"],
+  );
+
+  const seen = new Set<string>();
+  const months: JadwalMonthOption[] = [];
+
+  for (const entry of data) {
+    if (!entry.bulan) continue;
+
+    const key = dateToMonthKey(entry.bulan);
+
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    months.push({ key, label: formatMonthLabel(key) });
+  }
+
+  return months;
 }
 
 /* ==========================================================================

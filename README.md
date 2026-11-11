@@ -36,6 +36,7 @@ Content types used by this site:
 - **category** — `name`, `slug`, `description`
 - **tag** — `name`, `slug`
 - **author** — `name`, `slug`, `bio`, `role`, `avatar`
+- **jadwal-kajian** — `judul`, `bulan` (Date), `sesi` (repeatable component `jadwal.sesi`: `tanggal`, `waktuMulai`, `waktuSelesai`, `judul`, `narasumber`, `lokasi`, `kategori`, `linkKajian`)
 
 `content` may be Markdown (Strapi's default rich text editor) or HTML (e.g. CKEditor). Both are supported by `components/content/rich-text.tsx`.
 
@@ -53,7 +54,13 @@ getAllTags() / searchTags(search)
 getAllAuthors() / searchAuthors(search)
 getAllPostSlugs()
 getAllPostsForSitemap()
+getJadwalKajianByMonth("2026-11")
+getJadwalKajianMonths()
 ```
+
+The `jadwal-kajian` content type must exist in Strapi before the schedule page
+shows data. See [`docs/strapi-jadwal-kajian.md`](docs/strapi-jadwal-kajian.md)
+for the schema and deployment steps.
 
 Responses are cached with Next.js cache tags (`strapi`, `articles`, `categories`, `tags`, `authors`, `article:<slug>`) and revalidated every hour by default. Fetchers degrade gracefully: if Strapi is unreachable the UI renders empty states instead of failing the build.
 
@@ -73,11 +80,13 @@ app/
   api/revalidate/      # Strapi webhook handler
   api/og/              # Dynamic OG image
   posts/               # Article list, detail, categories, tags, authors
+  jadwal-kajian/       # Monthly kajian schedule from Strapi
   kegiatan/            # Static activities page
   tentang-kami/        # Static about page
   wakaf/[slug]/        # Static waqf page
 components/
   content/rich-text.tsx # Markdown/HTML renderer
+  jadwal/               # Month switcher and schedule list
   posts/                # Post card, filter, search
 lib/
   strapi.ts             # Strapi API client

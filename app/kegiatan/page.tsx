@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container, Section } from "@/components/craft";
 import { SectionHeader } from "@/components/shared/section-header";
-import { HeartHandshake } from "lucide-react";
+import { CalendarDays, HeartHandshake } from "lucide-react";
 
 const activities = [
   {
@@ -159,6 +159,17 @@ export default function KegiatanPage() {
           </Button>
 
           <div className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="rounded-full"
+            >
+              <Link href="/jadwal-kajian">
+                <CalendarDays className="size-4" />
+                Lihat Jadwal Kajian
+              </Link>
+            </Button>
             <Button
               asChild
               size="lg"

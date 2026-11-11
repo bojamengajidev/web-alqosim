@@ -31,6 +31,7 @@ const MODEL_TAGS: Record<string, string[]> = {
   category: ["categories", "articles"],
   tag: ["tags", "articles"],
   author: ["authors", "articles"],
+  "jadwal-kajian": ["jadwal-kajian"],
 };
 
 export async function POST(request: NextRequest) {

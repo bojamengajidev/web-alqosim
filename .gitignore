@@ -31,3 +31,10 @@ yarn-error.log*
 .DS_Store
 *.pem
 Thumbs.db
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

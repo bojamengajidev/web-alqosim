@@ -66,6 +66,29 @@ export interface StrapiArticle {
   updatedAt: string;
 }
 
+export type StrapiKajianKategori = "rutin" | "khusus" | "umum";
+
+export interface StrapiKajianSession {
+  id?: number;
+  tanggal: string;
+  waktuMulai: string;
+  waktuSelesai?: string | null;
+  judul: string;
+  narasumber?: string | null;
+  lokasi?: string | null;
+  kategori?: StrapiKajianKategori | null;
+  linkKajian?: string | null;
+}
+
+export interface StrapiJadwalKajian {
+  documentId: string;
+  judul: string;
+  bulan: string;
+  sesi?: StrapiKajianSession[] | null;
+  publishedAt: string;
+  updatedAt: string;
+}
+
 export interface StrapiPagination {
   page: number;
   pageSize: number;
