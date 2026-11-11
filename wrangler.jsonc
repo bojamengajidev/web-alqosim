@@ -10,6 +10,9 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "vars": {
+    "STRAPI_URL": "https://cms.masjidalqosim.com"
+  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
