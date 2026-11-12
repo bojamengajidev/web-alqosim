@@ -78,9 +78,10 @@ export default async function Page({
                   alt="Poster program wakaf jariyah Masjid Muhammad Al Qosim"
                   width={720}
                   height={1280}
-                  quality={70}
+                  quality={75}
                   sizes="(min-width: 1024px) 480px, 100vw"
                   className="h-auto w-full object-cover"
+                  fetchPriority="high"
                   preload
                 />
               </Card>

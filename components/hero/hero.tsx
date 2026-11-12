@@ -15,8 +15,9 @@ export default function Hero() {
         alt="Foto Masjid Muhammad Al Qosim diambil dari udara"
         fill
         preload
+        fetchPriority="high"
         sizes="100vw"
-        quality={70}
+        quality={75}
         className="object-cover"
       />
 
