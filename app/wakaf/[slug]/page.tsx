@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import ProgramWakaf from "@/public/images/program-wakaf.png";
+
 export const metadata: Metadata = {
   title: "Peluang Wakaf Jariyah",
   description:
@@ -72,7 +74,7 @@ export default async function Page({
             <div className="flex flex-col gap-6">
               <Card className="overflow-hidden border-border/60 p-0 shadow-soft">
                 <Image
-                  src="/images/program-wakaf.png"
+                  src={ProgramWakaf}
                   alt="Poster program wakaf jariyah Masjid Muhammad Al Qosim"
                   width={720}
                   height={1280}

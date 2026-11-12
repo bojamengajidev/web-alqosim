@@ -8,6 +8,9 @@ import { Container, Section } from "@/components/craft";
 import { SectionHeader } from "@/components/shared/section-header";
 import { CalendarDays, HeartHandshake } from "lucide-react";
 
+import DroneKegiatan from "@/public/images/drone-2.webp";
+import ProgramWakaf from "@/public/images/program-wakaf.png";
+
 import {
   getPostsPaginated,
   pickImageUrl,
@@ -104,7 +107,7 @@ export default async function KegiatanPage() {
         <Container className="max-w-4xl mx-auto">
           <div className="relative h-48 md:h-64 bg-secondary/60 rounded-2xl overflow-hidden mb-6">
             <Image
-              src="/images/drone-2.webp"
+              src={DroneKegiatan}
               alt="Foto udara Masjid Muhammad Al Qosim area kegiatan"
               fill
               className="object-cover"
@@ -143,7 +146,7 @@ export default async function KegiatanPage() {
                   className="flex flex-col h-full border-border/60 shadow-none overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
                   <Image
-                    src={act.image ?? "/images/program-wakaf.png"}
+                    src={act.image ?? ProgramWakaf}
                     alt={act.title}
                     width={400}
                     height={250}

@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import QRIS from "@/public/images/qris.png";
+
 import BankItem from "./bank-item";
 
 export default function DonasiCard() {
@@ -73,7 +75,7 @@ export default function DonasiCard() {
           <TabsContent value="qris" className="space-y-4">
             <div className="flex justify-center rounded-xl border border-border/60 bg-background p-4">
               <Image
-                src="/images/qris.png"
+                src={QRIS}
                 alt="Kode QRIS donasi Masjid Muhammad Al Qosim"
                 width={640}
                 height={1280}

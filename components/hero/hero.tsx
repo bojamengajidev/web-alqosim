@@ -5,11 +5,13 @@ import { ArrowRight, MapPin, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+import HeroDrone from "@/public/images/viewdrone-2.webp";
+
 export default function Hero() {
   return (
     <section className="relative isolate flex min-h-[calc(100svh-1rem)] items-end overflow-hidden">
       <Image
-        src="/images/viewdrone-2.webp"
+        src={HeroDrone}
         alt="Foto Masjid Muhammad Al Qosim diambil dari udara"
         fill
         priority

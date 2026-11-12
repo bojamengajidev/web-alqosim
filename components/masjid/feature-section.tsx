@@ -46,7 +46,7 @@ const features = [
   },
   {
     icon: Moon,
-    title: "Shalat Rawatib",
+    title: "Shalat Sunnah Rawatib",
     description: "Shalat sunnah yang mengiringi shalat wajib.",
   },
   {

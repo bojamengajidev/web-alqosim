@@ -13,6 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import PPDB from "@/public/images/ppdb.webp";
+
 export default function BlogCard() {
   return (
     <Card className="overflow-hidden border-border/60 shadow-soft">
@@ -30,7 +32,7 @@ export default function BlogCard() {
       <CardContent>
         <div className="overflow-hidden rounded-xl border border-border/60 bg-muted">
           <Image
-            src="/images/ppdb.webp"
+            src={PPDB}
             alt="Poster penerimaan peserta didik baru"
             width={720}
             height={1280}

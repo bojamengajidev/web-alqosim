@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 
 import DonasiCard from "@/components/donasi/donasi-card";
 
+import ProgramWakaf from "@/public/images/program-wakaf.png";
+
 export default function DonasiSection() {
   return (
     <Section className="bg-secondary/40">
@@ -20,7 +22,7 @@ export default function DonasiSection() {
 
             <Card className="mt-8 overflow-hidden border-border/60 p-0 shadow-soft">
               <Image
-                src="/images/program-wakaf.png"
+                src={ProgramWakaf}
                 alt="Poster program wakaf jariyah Masjid Muhammad Al Qosim"
                 width={720}
                 height={1280}
