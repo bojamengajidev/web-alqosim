@@ -14,8 +14,9 @@ export default function Hero() {
         src={HeroDrone}
         alt="Foto Masjid Muhammad Al Qosim diambil dari udara"
         fill
-        priority
+        preload
         sizes="100vw"
+        quality={70}
         className="object-cover"
       />
 
