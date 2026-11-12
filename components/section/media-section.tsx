@@ -3,7 +3,10 @@ import { Youtube } from "lucide-react";
 
 import { Container, Section } from "@/components/craft";
 import { SectionHeader } from "@/components/shared/section-header";
+import YouTubeLite from "@/components/shared/youtube-lite";
 import { Button } from "@/components/ui/button";
+
+import KajianPoster from "@/public/images/kajian-boja-mengaji.webp";
 
 
 export default function MediaSection() {
@@ -17,13 +20,10 @@ export default function MediaSection() {
           description="Ikuti channel kami untuk mendapatkan pembaruan konten kajian rutin dan siaran langsung dari Boja Mengaji."
         />
         <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-xl border border-border/60 shadow-soft">
-          <iframe
-            className="w-full aspect-video rounded-xl"
-            src="https://www.youtube.com/embed/c0GkhImWPao"
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
+          <YouTubeLite
+            videoId="c0GkhImWPao"
+            title="Kajian Boja Mengaji"
+            poster={KajianPoster}
           />
         </div>
 
