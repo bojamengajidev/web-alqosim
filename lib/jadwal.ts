@@ -110,15 +110,17 @@ export function formatTimeRange(
 }
 
 export function kategoriLabel(
-  kategori?: StrapiKajianKategori | null,
+  kategori?: string | null,
 ): string | null {
   if (!kategori) return null;
 
-  return {
-    rutin: "Rutin",
-    khusus: "Khusus",
-    umum: "Umum",
-  }[kategori];
+  const label = kategori.toLowerCase();
+  if (label === "rutin") return "Rutin";
+  if (label === "khusus") return "Khusus";
+  if (label === "umum") return "Umum";
+
+  // Return the category as-is with first letter capitalized for unknown values
+  return kategori.charAt(0).toUpperCase() + kategori.slice(1);
 }
 
 export function isSafeHttpUrl(value?: string | null): value is string {

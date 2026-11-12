@@ -7,6 +7,7 @@ import type {
   StrapiAuthor,
   StrapiCategory,
   StrapiJadwalKajian,
+  StrapiKajianSession,
   StrapiMedia,
   StrapiTag,
 } from "./strapi.d";
@@ -430,64 +431,23 @@ const JADWAL_POPULATE: Query = {
   "populate[sesi]": "true",
 };
 
-export async function getJadwalKajianByMonth(
-  monthKey: string,
-): Promise<StrapiJadwalKajian | null> {
-  const bulan = monthKeyToDate(monthKey);
 
-  if (!bulan) return null;
 
-  const { data } = await strapiFetchPaginatedGraceful<StrapiJadwalKajian>(
-    "/jadwal-kajians",
-    {
-      ...JADWAL_POPULATE,
-      "filters[bulan][$eq]": bulan,
-      "sort[0]": "publishedAt:desc",
-      "pagination[page]": 1,
-      "pagination[pageSize]": 1,
-    },
-    ["strapi", "jadwal-kajians"],
-  );
 
-  const entry = data[0];
+/* ==========================================================================
+   JADWAL KAJIAN HELPERS
+   ========================================================================== */
 
-  if (!entry) return null;
+export async function getAllJadwalKajian(): Promise<StrapiKajianSession[]> {
+  if (!isConfigured) return [];
 
-  return {
-    ...entry,
-    sesi: (entry.sesi ?? []).filter(
-      (session) => Boolean(session?.tanggal && session?.judul),
-    ),
-  };
-}
+  const result: any = await strapiFetchPaginatedGraceful("/jadwal-kajians", {
+    "sort[0]": "tanggal:asc",
+    "pagination[page]": 1,
+    "pagination[pageSize]": 100,
+  });
 
-export async function getJadwalKajianMonths(): Promise<JadwalMonthOption[]> {
-  const { data } = await strapiFetchPaginatedGraceful<StrapiJadwalKajian>(
-    "/jadwal-kajians",
-    {
-      "fields[0]": "bulan",
-      "sort[0]": "bulan:desc",
-      "pagination[page]": 1,
-      "pagination[pageSize]": 100,
-    },
-    ["strapi", "jadwal-kajians"],
-  );
-
-  const seen = new Set<string>();
-  const months: JadwalMonthOption[] = [];
-
-  for (const entry of data) {
-    if (!entry.bulan) continue;
-
-    const key = dateToMonthKey(entry.bulan);
-
-    if (seen.has(key)) continue;
-
-    seen.add(key);
-    months.push({ key, label: formatMonthLabel(key) });
-  }
-
-  return months;
+  return result.data as StrapiKajianSession[];
 }
 
 /* ==========================================================================

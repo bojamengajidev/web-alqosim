@@ -76,15 +76,20 @@ export interface StrapiKajianSession {
   judul: string;
   narasumber?: string | null;
   lokasi?: string | null;
-  kategori?: StrapiKajianKategori | null;
+  kategori?: string | null;
   linkKajian?: string | null;
 }
 
 export interface StrapiJadwalKajian {
   documentId: string;
   judul: string;
-  bulan: string;
-  sesi?: StrapiKajianSession[] | null;
+  tanggal: string;
+  waktuMulai: string;
+  waktuSelesai?: string | null;
+  narasumber?: string | null;
+  lokasi?: string | null;
+  kategori?: string | null;
+  linkKajian?: string | null;
   publishedAt: string;
   updatedAt: string;
 }
