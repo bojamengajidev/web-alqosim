@@ -1,6 +1,6 @@
 # Masjid Muhammad Al Qosim
 
-Website Masjid Muhammad Al Qosim / Boja Mengaji. Built with Next.js 16, React 18, TypeScript, Tailwind CSS v4, and the Strapi CMS at `cms.masjidalqosim.com`.
+Website Masjid Muhammad Al Qosim / Boja Mengaji. Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, and the Strapi CMS at `cms.masjidalqosim.com`.
 
 ## Requirements
 
