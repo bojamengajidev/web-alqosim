@@ -7,13 +7,6 @@ import { cn } from "@/lib/utils";
 
 import { Providers } from "./providers";
 
-<head>
-  <script
-    dangerouslySetInnerHTML={{
-      __html: `window.__name = window.__name || function(fn){ return fn };`,
-    }}
-  />
-</head>
 
 export const metadata: Metadata = {
   title: {
@@ -45,6 +38,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" suppressHydrationWarning>
+     <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__name = window.__name || function(fn){ return fn };`,
+          }}
+        />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
