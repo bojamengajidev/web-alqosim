@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 
 import { Container, Section } from "@/components/craft";
-import { MonthSwitcher } from "@/components/jadwal/month-switcher";
 import { ScheduleList } from "@/components/jadwal/schedule-list";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 
 import {
-  formatMonthLabel,
-  getCurrentMonthKey,
   getTodayKey,
   sortSessions,
   groupSessions,
@@ -31,7 +28,8 @@ export default async function Page({
 }: {
   searchParams: Promise<{ bulan?: string }>;
 }) {
-  const { bulan } = await searchParams;
+  // Accessing searchParams keeps this route dynamic.
+  await searchParams;
 
   // Fetch ALL sessions from CMS (flat list, no month grouping)
   const allSessions = await getAllJadwalKajian();

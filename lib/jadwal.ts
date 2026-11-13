@@ -2,10 +2,7 @@
 // Dates are handled in Asia/Jakarta time so "today" and month labels
 // stay correct regardless of the server timezone.
 
-import type {
-  StrapiKajianKategori,
-  StrapiKajianSession,
-} from "./strapi.d";
+import type { StrapiKajianSession } from "./strapi.d";
 
 const TIMEZONE = "Asia/Jakarta";
 

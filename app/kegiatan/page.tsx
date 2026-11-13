@@ -15,7 +15,6 @@ import {
   getPostsPaginated,
   pickImageUrl,
 } from "@/lib/strapi";
-import type { StrapiArticle } from "@/lib/strapi.d";
 
 const ACTIVITIES_PER_PAGE = 8;
 
@@ -42,7 +41,7 @@ export const revalidate = 3600;
 
 export default async function KegiatanPage() {
   // Fetch all activities from Strapi, filtering by known activity slugs
-  const { data: posts, headers } = await getPostsPaginated(
+  const { data: posts } = await getPostsPaginated(
     1,
     100, // Fetch enough to cover all activities
     {
@@ -50,8 +49,6 @@ export default async function KegiatanPage() {
       search: "",
     }
   );
-
-  const { total, totalPages } = headers;
 
   // Map Strapi articles to activity cards - filter by our known activity slugs
   const activities: Array<{

@@ -111,6 +111,9 @@ const Carousel = React.forwardRef<
         return
       }
 
+      // `onSelect` is a prop that may update external state; Embla is the
+      // source of truth here, so notifying it after mount is intentional.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       onSelect(api)
       api.on("reInit", onSelect)
       api.on("select", onSelect)

@@ -6,17 +6,10 @@ import type {
   StrapiArticle,
   StrapiAuthor,
   StrapiCategory,
-  StrapiJadwalKajian,
   StrapiKajianSession,
   StrapiMedia,
   StrapiTag,
 } from "./strapi.d";
-import {
-  dateToMonthKey,
-  formatMonthLabel,
-  monthKeyToDate,
-  type JadwalMonthOption,
-} from "./jadwal";
 
 /* ==========================================================================
    CONFIG
@@ -122,24 +115,6 @@ async function strapiFetch<T>(
   }
 
   return res.json();
-}
-
-async function strapiFetchGraceful<T>(
-  path: string,
-  fallback: T,
-  options: FetchOptions = {},
-): Promise<T> {
-  if (!isConfigured) return fallback;
-
-  try {
-    return await strapiFetch<T>(path, options);
-  } catch (error) {
-    console.warn(
-      `Strapi fetch failed: ${path}`,
-      error instanceof Error ? error.message : error,
-    );
-    return fallback;
-  }
 }
 
 async function strapiFetchPaginated<T>(
@@ -424,30 +399,22 @@ export async function searchAuthors(search: string): Promise<StrapiAuthor[]> {
 }
 
 /* ==========================================================================
-   JADWAL KAJIAN (monthly schedule)
-   ========================================================================== */
-
-const JADWAL_POPULATE: Query = {
-  "populate[sesi]": "true",
-};
-
-
-
-
-/* ==========================================================================
    JADWAL KAJIAN HELPERS
    ========================================================================== */
 
 export async function getAllJadwalKajian(): Promise<StrapiKajianSession[]> {
   if (!isConfigured) return [];
 
-  const result: any = await strapiFetchPaginatedGraceful("/jadwal-kajians", {
-    "sort[0]": "tanggal:asc",
-    "pagination[page]": 1,
-    "pagination[pageSize]": 100,
-  });
+  const { data } = await strapiFetchPaginatedGraceful<StrapiKajianSession>(
+    "/jadwal-kajians",
+    {
+      "sort[0]": "tanggal:asc",
+      "pagination[page]": 1,
+      "pagination[pageSize]": 100,
+    },
+  );
 
-  return result.data as StrapiKajianSession[];
+  return data;
 }
 
 /* ==========================================================================

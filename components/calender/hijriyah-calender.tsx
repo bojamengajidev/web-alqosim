@@ -25,26 +25,22 @@ type HijriDate = {
 export function HijriCalendar({ className }: HijriCalendarProps) {
   const mounted = useMounted();
 
-  const [date, setDate] = React.useState<Date>();
+  // The calendar is only rendered after mount, so the current date can be
+  // initialised eagerly without risking a server/client hydration mismatch.
+  const [date, setDate] = React.useState<Date | undefined>(() => new Date());
   const [hijri, setHijri] = React.useState<HijriDate | null>(null);
   const [isAyyamulBidh, setIsAyyamulBidh] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!mounted) return;
-    setDate(new Date());
-  }, [mounted]);
 
   React.useEffect(() => {
     if (!date) return;
 
     let active = true;
 
-    setHasError(false);
-
     getHijriDate(date)
       .then((res) => {
         if (!active) return;
+        setHasError(false);
         setHijri(res);
         const hijriDay = Number(res.day);
         setIsAyyamulBidh([13, 14, 15].includes(hijriDay));

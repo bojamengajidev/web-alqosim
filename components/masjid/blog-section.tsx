@@ -4,8 +4,6 @@ import { Container, Section } from "@/components/craft";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Card, CardContent } from "@/components/ui/card";
 
-import BlogCard from "./blog-card";
-
 const features = [
   {
     icon: BookOpen,
