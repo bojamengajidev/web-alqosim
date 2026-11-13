@@ -7,6 +7,14 @@ import { cn } from "@/lib/utils";
 
 import { Providers } from "./providers";
 
+<head>
+  <script
+    dangerouslySetInnerHTML={{
+      __html: `window.__name = window.__name || function(fn){ return fn };`,
+    }}
+  />
+</head>
+
 export const metadata: Metadata = {
   title: {
     default: "Masjid Muhammad Al Qosim",
