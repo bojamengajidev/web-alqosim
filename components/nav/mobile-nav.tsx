@@ -69,10 +69,26 @@ export function MobileNav() {
               <p className="px-2 pb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Menu
               </p>
-              {Object.entries(mainMenu).map(([label, href]) => (
-                <MobileLink key={href} href={href} onOpenChange={setOpen}>
-                  {label.charAt(0).toUpperCase() + label.slice(1)}
-                </MobileLink>
+              {mainMenu.map((item) => (
+                <React.Fragment key={item.href}>
+                  <MobileLink href={item.href} onOpenChange={setOpen}>
+                    {item.label}
+                  </MobileLink>
+                  {item.items?.length ? (
+                    <div className="flex flex-col gap-1">
+                      {item.items.map((child) => (
+                        <MobileLink
+                          key={child.href}
+                          href={child.href}
+                          onOpenChange={setOpen}
+                          className="ml-3 border-l border-border/60 py-2 pl-4 text-sm font-normal text-muted-foreground"
+                        >
+                          {child.label}
+                        </MobileLink>
+                      ))}
+                    </div>
+                  ) : null}
+                </React.Fragment>
               ))}
             </div>
 
@@ -82,9 +98,13 @@ export function MobileNav() {
               <p className="px-2 pb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Blog
               </p>
-              {Object.entries(contentMenu).map(([label, href]) => (
-                <MobileLink key={href} href={href} onOpenChange={setOpen}>
-                  {label.charAt(0).toUpperCase() + label.slice(1)}
+              {contentMenu.map((item) => (
+                <MobileLink
+                  key={item.href}
+                  href={item.href}
+                  onOpenChange={setOpen}
+                >
+                  {item.label}
                 </MobileLink>
               ))}
             </div>
@@ -131,7 +151,7 @@ function MobileLink({
         onOpenChange?.(false);
       }}
       className={cn(
-        "flex items-center justify-between rounded-xl px-3 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-secondary",
+        "flex items-center justify-between rounded-xl px-3 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-transparent",
         className,
       )}
       {...props}

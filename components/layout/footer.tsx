@@ -6,7 +6,7 @@ import { Container, Section } from "@/components/craft";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-import { contentMenu, mainMenu } from "@/lib/menu.config";
+import { contentMenu, mainMenu, type MenuItem } from "@/lib/menu.config";
 import { siteConfig } from "@/lib/site.config";
 
 import Alqosim from "@/public/icons/alqosim-logo.ico";
@@ -119,20 +119,34 @@ function FooterColumn({
   items,
 }: {
   title: string;
-  items: Record<string, string>;
+  items: MenuItem[];
 }) {
   return (
     <div className="flex flex-col gap-4 text-sm">
       <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       <div className="flex flex-col gap-2 text-muted-foreground">
-        {Object.entries(items).map(([label, href]) => (
-          <Link
-            key={href}
-            href={href}
-            className="w-fit transition-colors hover:text-foreground"
-          >
-            {label.charAt(0).toUpperCase() + label.slice(1)}
-          </Link>
+        {items.map((item) => (
+          <div key={item.href} className="flex flex-col gap-2">
+            <Link
+              href={item.href}
+              className="w-fit transition-colors hover:text-foreground"
+            >
+              {item.label}
+            </Link>
+            {item.items?.length ? (
+              <div className="flex flex-col gap-2 border-l border-border/60 pl-3">
+                {item.items.map((child) => (
+                  <Link
+                    key={child.href}
+                    href={child.href}
+                    className="w-fit transition-colors hover:text-foreground"
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+          </div>
         ))}
       </div>
     </div>

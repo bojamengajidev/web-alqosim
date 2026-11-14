@@ -6,13 +6,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import { ClientOnly } from "@/components/utils/client-only";
 import { MobileNav } from "@/components/nav/mobile-nav";
 import { NavScroll } from "@/components/nav/nav-scroll";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import GradientButton from "@/components/ui/gradientbutton";
 
-import { mainMenu } from "@/lib/menu.config";
+import { mainMenu, type MenuItem } from "@/lib/menu.config";
 import { cn } from "@/lib/utils";
 
 import Logo from "@/public/icons/bojamengaji.ico";
@@ -23,6 +31,19 @@ interface NavProps {
   className?: string;
   children?: React.ReactNode;
   id?: string;
+}
+
+function isActive(href: string, pathname: string) {
+  return href === "/"
+    ? pathname === "/"
+    : pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function isMenuItemActive(item: MenuItem, pathname: string) {
+  return (
+    isActive(item.href, pathname) ||
+    (item.items?.some((child) => isActive(child.href, pathname)) ?? false)
+  );
 }
 
 export default function Navigation({ className, children, id }: NavProps) {
@@ -79,31 +100,84 @@ export default function Navigation({ className, children, id }: NavProps) {
 
           <div className="flex items-center gap-2">
             <div className="hidden items-center gap-1 md:flex">
-              {Object.entries(mainMenu).map(([label, href]) => {
-                const active =
-                  href === "/" ? pathname === "/" : pathname.startsWith(href);
+              <NavigationMenu
+                viewport={false}
+                className="max-w-none flex-none justify-start"
+              >
+                <NavigationMenuList className="space-x-1">
+                  {mainMenu.map((item) => {
+                    const active = isMenuItemActive(item, pathname);
 
-                return (
-                  <Button
-                    key={href}
-                    asChild
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "rounded-full px-3 text-sm text-muted-foreground hover:text-foreground",
-                      active &&
-                        "bg-secondary text-secondary-foreground hover:bg-secondary",
-                    )}
-                  >
-                    <Link
-                      href={href}
-                      aria-current={active ? "page" : undefined}
-                    >
-                      {label.charAt(0).toUpperCase() + label.slice(1)}
-                    </Link>
-                  </Button>
-                );
-              })}
+                    if (!item.items?.length) {
+                      return (
+                        <NavigationMenuItem key={item.href}>
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="sm"
+                            className={cn(
+                              "rounded-full px-3 text-sm text-muted-foreground hover:bg-transparent hover:text-primary focus:bg-transparent focus:text-primary",
+                              active &&
+                                "bg-transparent text-primary hover:bg-transparent hover:text-primary",
+                            )}
+                          >
+                            <Link
+                              href={item.href}
+                              aria-current={active ? "page" : undefined}
+                            >
+                              {item.label}
+                            </Link>
+                          </Button>
+                        </NavigationMenuItem>
+                      );
+                    }
+
+                    return (
+                      <NavigationMenuItem
+                        key={item.href}
+                        className="relative"
+                      >
+                        <NavigationMenuTrigger
+                          className={cn(
+                            "h-9 rounded-full bg-transparent px-3 text-sm font-medium text-muted-foreground hover:bg-transparent hover:text-primary focus:bg-transparent focus:text-primary data-[state=open]:bg-transparent data-[state=open]:text-primary",
+                            active &&
+                              "bg-transparent text-primary hover:bg-transparent hover:text-primary",
+                          )}
+                        >
+                          {item.label}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent className="absolute left-0 top-full pt-5">
+                          <ul className="flex w-52 flex-col gap-1 rounded-sm border border-border/60 bg-popover p-2 shadow-lg">
+                            {item.items.map((child) => {
+                              const childActive = isActive(child.href, pathname);
+
+                              return (
+                                <li key={child.href}>
+                                  <NavigationMenuLink asChild>
+                                    <Link
+                                      href={child.href}
+                                      aria-current={
+                                        childActive ? "page" : undefined
+                                      }
+                                      className={cn(
+                                        "flex w-full items-center rounded-xl px-3 py-2 text-sm textforeground transition-colors hover:bg-transparent hover:text-muted-foreground/80 focus:bg-transparent focus:text-muted-foreground/80",
+                                        childActive &&
+                                          "bg-transparent text-foreground",
+                                      )}
+                                    >
+                                      {child.label}
+                                    </Link>
+                                  </NavigationMenuLink>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </NavigationMenuContent>
+                      </NavigationMenuItem>
+                    );
+                  })}
+                </NavigationMenuList>
+              </NavigationMenu>
             </div>
 
             <ThemeToggle />

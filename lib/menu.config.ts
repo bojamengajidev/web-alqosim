@@ -1,15 +1,23 @@
 // Define the menu items
-export const mainMenu = {
-  beranda: "/",
-  "Tentang Kami": "/tentang-kami",
-  "Kegiatan": "/kegiatan",
-  "Jadwal Kajian": "/jadwal-kajian",
-  blog: "/posts",
+export type MenuItem = {
+  label: string;
+  href: string;
+  items?: Array<{ label: string; href: string }>;
 };
 
-export const contentMenu = {
-  categories: "/posts/categories",
-  tags: "/posts/tags",
-  authors: "/posts/authors",
-};
+export const mainMenu: MenuItem[] = [
+  { label: "Beranda", href: "/" },
+  { label: "Tentang Kami", href: "/tentang-kami" },
+  {
+    label: "Kegiatan",
+    href: "/kegiatan",
+    items: [{ label: "Program", href: "/kegiatan" },{ label: "Jadwal Kajian", href: "/jadwal-kajian" }],
+  },
+  { label: "Blog", href: "/posts" },
+];
 
+export const contentMenu: MenuItem[] = [
+  { label: "Categories", href: "/posts/categories" },
+  { label: "Tags", href: "/posts/tags" },
+  { label: "Authors", href: "/posts/authors" },
+];
